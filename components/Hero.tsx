@@ -38,6 +38,11 @@ export default function Hero({ onSignClick }: HeroProps) {
     });
   }
 
+  const handleDisconnect = () => {
+    userSession.signUserOut();
+    window.location.reload();
+  }
+
   // Prevent hydration mismatch
   if (!isMounted) return null; 
 
@@ -48,7 +53,10 @@ export default function Hero({ onSignClick }: HeroProps) {
       {isSignedIn && userAddress && (
         <div className={styles.walletBadge}>
           <span className={styles.statusDot}></span>
-          {truncatedAddress}
+          <span className={styles.addressText}>{truncatedAddress}</span>
+          <button className={styles.disconnectButton} onClick={handleDisconnect}>
+            Disconnect
+          </button>
         </div>
       )}
 
