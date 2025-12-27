@@ -18,10 +18,12 @@ export default function SignModal({ isOpen, onClose }: SignModalProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    
     
     // Contract details (Placeholder - Update with actual deployed address)
-    const contractAddress = 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM'; 
-    const contractName = 'signwall';
+    const contractAddress = 'SP1GNDB8SXJ51GBMSVVXMWGTPRFHGSMWNNBEY25A4'; 
+    const contractName = 'signwallV2';
     const functionName = 'sign';
 
     doContractCall({
