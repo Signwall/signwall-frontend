@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { fetchCallReadOnlyFunction, uintCV, cvToJSON } from '@stacks/transactions';
 import { STACKS_MAINNET } from '@stacks/network';
@@ -11,6 +12,14 @@ interface Signature {
   signer: string;
 }
 
+interface RawSignature {
+  id: number;
+  name: { value: string };
+  message: { value: string };
+  'block-height': { value: string };
+  signer: { value: string };
+}
+
 const CONTRACT_ADDRESS = 'SP1GNDB8SXJ51GBMSVVXMWGTPRFHGSMWNNBEY25A4';
 const CONTRACT_NAME = 'signwallV2';
 
@@ -21,7 +30,7 @@ export default function Wall() {
   useEffect(() => {
     const fetchSignatures = async () => {
       try {
-        const network = { ...STACKS_MAINNET, fetchFn: fetch };
+        const network = STACKS_MAINNET;
         
         // 1. Get total count
         const countFn = 'get-signature-count';
@@ -35,10 +44,14 @@ export default function Wall() {
         });
         
         const countJSON = cvToJSON(countRes);
-        const totalCount = parseInt(countJSON.value.value);
+        // For a uint CV, cvToJSON returns { type: 'uint', value: 'N' }
+        const totalCount = parseInt(countJSON.value);
         
+        console.log("Total signatures fetched:", totalCount);
+
         if (totalCount === 0) {
           setIsLoading(false);
+          setSignatures([]); // Ensure signatures array is empty
           return;
         }
 
@@ -58,18 +71,13 @@ export default function Wall() {
                senderAddress: CONTRACT_ADDRESS,
              }).then(res => { 
                 const data = cvToJSON(res);
+                // get-signature-by-index returns (optional (tuple ...))
+                // If data.value is null (None), return null to filter out later.
+                // Otherwise, data.value.value contains the tuple fields.
                 return data.value ? { ...data.value.value, id: i } : null;
              })
            );
         }
-
-interface RawSignature {
-  id: number;
-  name: { value: string };
-  message: { value: string };
-  'block-height': { value: string };
-  signer: { value: string };
-}
 
         const rawSignatures = await Promise.all(promises);
         
